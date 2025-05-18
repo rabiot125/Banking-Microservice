@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
     @Query("SELECT c FROM Customer c WHERE " +
             "(:name IS NULL OR CONCAT(c.firstName, ' ', c.lastName, ' ', COALESCE(c.otherName, '')) LIKE %:name%) AND " +
-            "(:startDate IS NULL OR c.createdAt >= :startDate) AND " +
-            "(:endDate IS NULL OR c.createdAt <= :endDate)")
+            "( cast(:startDate as date)  IS NULL OR c.createdAt >= :startDate) AND " +
+            "( cast(:endDate as date) IS NULL OR c.createdAt <= :endDate)")
     Page<Customer> findCustomersByNameOrDateCreated( @Param("name") String name, @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate,Pageable pageable);
 }
