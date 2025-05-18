@@ -64,5 +64,25 @@ mvn spring-boot:run
 
 # Swagger UI: http://localhost:8080/swagger-ui/index.html
 
+
+###Using Docker Compose
+# Make sure you are in the root of the project (banking-platform)
+
+# Build and start the database and all microservices
+docker-compose up --build
+
+# This will start:
+# - PostgreSQL database on port 5432
+# - Customer Service on port 8081
+# - Account Service on port 8090
+# - Card Service on port 8080
+
+# Access Swagger UIs at:
+# http://localhost:8081/swagger-ui/index.html
+# http://localhost:8090/swagger-ui/index.html
+# http://localhost:8080/swagger-ui/index.html
+
+
+
  
 
