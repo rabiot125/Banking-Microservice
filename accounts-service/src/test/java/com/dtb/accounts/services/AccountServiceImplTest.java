@@ -9,7 +9,9 @@ import com.dtb.accounts.models.Account;
 import com.dtb.accounts.repository.AccountRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
 
 import java.util.*;
@@ -18,13 +20,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class AccountServiceImplTest {
-
     @Mock
     private AccountRepository accountRepository;
-
     @Mock
     private CardServiceClient cardServiceClient;
-
     @InjectMocks
     private AccountServiceImpl accountService;
 
