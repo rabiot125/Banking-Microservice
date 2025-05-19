@@ -9,9 +9,7 @@ import com.dtb.accounts.models.Account;
 import com.dtb.accounts.repository.AccountRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
 
 import java.util.*;
@@ -140,8 +138,23 @@ class AccountServiceImplTest {
 
         assertEquals(1, dto.getAccounts().size());
     }
-
     @Test
+    void testFindAccountsWithCardAlias() {
+        Account account = sampleAccount();
+        Page<Account> page = new PageImpl<>(List.of(account));
+        AccountDto.CardInfo card = sampleCard();
+        card.setCardAlias("TestCardAlias");
+
+        when(accountRepository.findWithFilters("IBAN123", "BIC001", PageRequest.of(0, 10))).thenReturn(page);
+        when(cardServiceClient.getCardsByAccountId(anyLong())).thenReturn(List.of(card));
+        System.out.println("Test customer ID: " + account.getCustomerId());
+        // Using the exact same card alias as what you set above
+        AccountsListResponseDto dto = accountService.findAccounts("IBAN123", "BIC001", "TestCardAlias", 0, 10);
+
+        assertEquals(1, dto.getAccounts().size());
+    }
+
+   /* @Test
     void testFindAccountsWithCardAlias() {
         Account account = sampleAccount();
         Page<Account> page = new PageImpl<>(List.of(account));
@@ -154,7 +167,7 @@ class AccountServiceImplTest {
         AccountsListResponseDto dto = accountService.findAccounts("IBAN123", "BIC001", "TestCardAlias", 0, 10);
 
         assertEquals(1, dto.getAccounts().size());
-    }
+    }*/
 
     @Test
     void testFindAccountsWithCardAliasNoMatch() {

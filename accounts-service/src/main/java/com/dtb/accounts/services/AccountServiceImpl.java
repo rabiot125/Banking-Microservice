@@ -8,8 +8,6 @@ import com.dtb.accounts.feigns.CardServiceClient;
 import com.dtb.accounts.models.Account;
 import com.dtb.accounts.repository.AccountRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,12 +21,12 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
-    @Autowired
-    @Lazy
-    private  CardServiceClient cardServiceClient;
 
-    public AccountServiceImpl(AccountRepository accountRepository) {
+    private final CardServiceClient cardServiceClient;
+
+    public AccountServiceImpl(AccountRepository accountRepository, CardServiceClient cardServiceClient) {
         this.accountRepository = accountRepository;
+        this.cardServiceClient = cardServiceClient;
     }
 
     @Override
@@ -45,11 +43,13 @@ public class AccountServiceImpl implements AccountService {
         *Filter if card alias is provided
          */
         if (cardAlias != null && !cardAlias.isEmpty()) {
+            System.out.println("Before filter, accounts1: " + dtoList.size());
             dtoList = dtoList.stream()
                     .filter(accountDTO -> accountDTO.getCards() != null &&
                             accountDTO.getCards().stream()
-                                    .anyMatch(card -> card.getCardAlias().contains(cardAlias)))
+                                    .anyMatch(card -> card.getCardAlias().toLowerCase().contains(cardAlias.toLowerCase())))
                     .collect(Collectors.toList());
+            System.out.println("After filter, accounts2: " + dtoList.size());
         }
 
         AccountsListResponseDto dto =new AccountsListResponseDto();
@@ -111,12 +111,14 @@ public class AccountServiceImpl implements AccountService {
         dto.setCustomerId(account.getCustomerId());
         dto.setBicSwift(account.getBicSwift());
         dto.setIban(account.getIban());
-
+        //System.out.println("Test customer ID: " + account.getCustomerId());
         try {
             List<AccountDto.CardInfo> cards = cardServiceClient.getCardsByAccountId(Long.valueOf(account.getCustomerId()));
             dto.setCards(cards);
-        } catch (Exception e) {
+            System.out.println("Card service returned " + cards.size() + " cards");
 
+        } catch (Exception e) {
+            e.printStackTrace();
             dto.setCards(null);
         }
         return dto;
