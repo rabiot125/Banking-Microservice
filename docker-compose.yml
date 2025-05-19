@@ -26,9 +26,9 @@ services:
     depends_on:
       - postgres-db
 
-  account-service:
+  accounts-service:
     build:
-      context: ./account-service
+      context: ./accounts-service
       dockerfile: Dockerfile
     ports:
       - "8090:8090"
